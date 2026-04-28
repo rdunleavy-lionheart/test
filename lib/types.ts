@@ -61,10 +61,19 @@ export type Mappings = {
   csvCodeToCode: Record<string, string>;
 };
 
+export type SourceTimestamps = {
+  ads?: string;
+  ages?: string;
+  leads?: string;
+  fte?: string;
+  conv?: string;
+};
+
 export type Stored = {
   academies: Academy[];
   uploadedAt: string;
   hasAges?: boolean;
+  sources?: SourceTimestamps;
 };
 
 export type FilterKey = "all" | "priority" | "inefficient" | "efficient" | "misaligned";

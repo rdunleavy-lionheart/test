@@ -55,10 +55,11 @@ export default function SettingsPage() {
     <div className="container-page">
       <div className="masthead">
         <BrandMark tag="Settings · Column Mappings" />
-        <div className="header-actions">
-          <Link href="/dashboard" className="btn-link">Dashboard</Link>
-          <Link href="/upload" className="btn-link">Upload</Link>
-          <button className="btn-link" onClick={logout}>Sign out</button>
+        <div className="header-actions" style={{ alignItems: "center" }}>
+          <Link href="/upload" className="btn-link btn-primary">Re-upload data</Link>
+          <span className="action-divider" />
+          <Link href="/dashboard" className="btn-tertiary">Dashboard</Link>
+          <button className="btn-tertiary" onClick={logout}>Sign out</button>
         </div>
       </div>
 

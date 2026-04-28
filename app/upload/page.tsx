@@ -20,7 +20,7 @@ import {
 import type { CsvRow } from "@/lib/processor";
 import { buildSampleStored } from "@/lib/sample";
 
-type Loaded = { name: string; rowCount: number; rows: CsvRow[] } | null;
+type Loaded = { name: string; rowCount: number; rows: CsvRow[]; uploadedAt: string } | null;
 
 export default function UploadPage() {
   const router = useRouter();
@@ -59,7 +59,18 @@ export default function UploadPage() {
         setError("No academies could be matched. Check your column headers and the campaign/center mapping in /settings.");
         return;
       }
-      saveStored({ academies, uploadedAt: new Date().toISOString(), hasAges });
+      saveStored({
+        academies,
+        uploadedAt: new Date().toISOString(),
+        hasAges,
+        sources: {
+          ads: ads.uploadedAt,
+          ages: ages.uploadedAt,
+          leads: leads.uploadedAt,
+          fte: fte.uploadedAt,
+          conv: conv.uploadedAt,
+        },
+      });
       router.push("/dashboard");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to build dashboard data");
@@ -80,9 +91,10 @@ export default function UploadPage() {
     <div className="container-page">
       <div className="masthead">
         <BrandMark tag="Marketing Allocation Brief" />
-        <div className="header-actions">
-          <Link href="/settings" className="btn-link">Mappings</Link>
-          <button className="btn-link" onClick={logout}>Sign out</button>
+        <div className="header-actions" style={{ alignItems: "center" }}>
+          <Link href="/dashboard" className="btn-tertiary">Dashboard</Link>
+          <Link href="/settings" className="btn-tertiary">Mappings</Link>
+          <button className="btn-tertiary" onClick={logout}>Sign out</button>
         </div>
       </div>
 
@@ -99,35 +111,35 @@ export default function UploadPage() {
           description="Campaign, Cost, Clicks, Avg. CPC, CTR, Impressions"
           loadedFile={ads ? { name: ads.name, rowCount: ads.rowCount } : null}
           diagnostic={adsDiag}
-          onParsed={(rows, file) => setAds({ name: file.name, rowCount: rows.length, rows })}
+          onParsed={(rows, file) => setAds({ name: file.name, rowCount: rows.length, rows, uploadedAt: new Date().toISOString() })}
         />
         <CsvUploader
           label="B · Google Ads — Clicks by Age Group"
           description="Campaign, Preschool, School Age: Trailblazers, Infants, Toddlers & Twos. Powers the targeting alignment score."
           loadedFile={ages ? { name: ages.name, rowCount: ages.rowCount } : null}
           diagnostic={agesDiag}
-          onParsed={(rows, file) => setAges({ name: file.name, rowCount: rows.length, rows })}
+          onParsed={(rows, file) => setAges({ name: file.name, rowCount: rows.length, rows, uploadedAt: new Date().toISOString() })}
         />
         <CsvUploader
           label="C · Lead Source"
           description="Center Name, Total Leads, Paid Lead"
           loadedFile={leads ? { name: leads.name, rowCount: leads.rowCount } : null}
           diagnostic={leadsDiag}
-          onParsed={(rows, file) => setLeads({ name: file.name, rowCount: rows.length, rows })}
+          onParsed={(rows, file) => setLeads({ name: file.name, rowCount: rows.length, rows, uploadedAt: new Date().toISOString() })}
         />
         <CsvUploader
           label="D · FTE / Classroom Roll"
           description="Academy, Enrollments, FTEs by classroom + budget"
           loadedFile={fte ? { name: fte.name, rowCount: fte.rowCount } : null}
           diagnostic={fteDiag}
-          onParsed={(rows, file) => setFte({ name: file.name, rowCount: rows.length, rows })}
+          onParsed={(rows, file) => setFte({ name: file.name, rowCount: rows.length, rows, uploadedAt: new Date().toISOString() })}
         />
         <CsvUploader
           label="E · Conversion Rates"
           description="Location Name, Lead→Tour & Tour→Registered (most recent month)"
           loadedFile={conv ? { name: conv.name, rowCount: conv.rowCount } : null}
           diagnostic={convDiag}
-          onParsed={(rows, file) => setConv({ name: file.name, rowCount: rows.length, rows })}
+          onParsed={(rows, file) => setConv({ name: file.name, rowCount: rows.length, rows, uploadedAt: new Date().toISOString() })}
         />
       </div>
 

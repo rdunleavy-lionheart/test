@@ -63,5 +63,11 @@ export function buildSampleStored(): Stored {
       rooms: det?.rooms ?? null,
     };
   });
-  return { academies, uploadedAt: new Date().toISOString(), hasAges: true };
+  const now = new Date().toISOString();
+  return {
+    academies,
+    uploadedAt: now,
+    hasAges: true,
+    sources: { ads: now, ages: now, leads: now, fte: now, conv: now },
+  };
 }

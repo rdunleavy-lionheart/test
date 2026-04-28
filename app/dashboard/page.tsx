@@ -2,15 +2,52 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import BrandMark from "@/components/BrandMark";
 import FilterBar from "@/components/FilterBar";
+import StalenessChip, { classifyAge } from "@/components/StalenessChip";
 import InsightsPanel from "@/components/InsightsPanel";
 import MasterTable from "@/components/MasterTable";
 import ReallocationTable from "@/components/ReallocationTable";
 import StatsStrip from "@/components/StatsStrip";
 import { loadStored } from "@/lib/processor";
 import type { FilterKey, Stored } from "@/lib/types";
+
+const SOURCE_LABELS: Record<string, string> = {
+  ads: "Google Ads — Campaign",
+  ages: "Google Ads — Age groups",
+  leads: "Lead Source",
+  fte: "Classroom Roll",
+  conv: "Conversion Rates",
+};
+
+function SourcesBlock({ sources }: { sources: NonNullable<Stored["sources"]> }) {
+  const [open, setOpen] = useState(false);
+  const keys: (keyof NonNullable<Stored["sources"]>)[] = ["ads", "ages", "leads", "fte", "conv"];
+  return (
+    <div className="no-print" style={{ width: "100%", maxWidth: 360 }}>
+      <button
+        className="btn-tertiary"
+        onClick={() => setOpen((v) => !v)}
+        style={{ padding: 0, fontSize: 10, color: "var(--dim)" }}
+      >
+        {open ? "▾" : "▸"} Source CSV ages
+      </button>
+      {open && (
+        <div className="source-list">
+          {keys.map((k) => (
+            <Fragment key={k}>
+              <span className="src-key">{SOURCE_LABELS[k]}</span>
+              <span style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end" }}>
+                <StalenessChip iso={sources[k]} />
+              </span>
+            </Fragment>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function formatTimestamp(iso: string): string {
   try {
@@ -68,19 +105,32 @@ export default function DashboardPage() {
       <div className="masthead">
         <BrandMark tag="Marketing Allocation Brief" />
         <div className="meta" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
-          <div>
-            Period <strong>past 28 days</strong>
-            <br />
-            Last updated <strong>{compiled}</strong>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <span>
+              Period <strong>past 28 days</strong> · Last updated <strong>{compiled}</strong>
+            </span>
+            <StalenessChip iso={data.uploadedAt} />
           </div>
-          <div className="header-actions no-print">
-            <Link href="/upload" className="btn-link">Re-upload data</Link>
-            <Link href="/settings" className="btn-link">Mappings</Link>
-            <button className="btn-link" onClick={() => window.print()}>Print / PDF</button>
-            <button className="btn-link" onClick={logout}>Sign out</button>
+          <div className="header-actions no-print" style={{ alignItems: "center" }}>
+            <Link href="/upload" className="btn-link btn-primary">Re-upload data</Link>
+            <span className="action-divider" />
+            <Link href="/settings" className="btn-tertiary">Mappings</Link>
+            <button className="btn-tertiary" onClick={() => window.print()}>Print / PDF</button>
+            <button className="btn-tertiary" onClick={logout}>Sign out</button>
           </div>
+          {data.sources && <SourcesBlock sources={data.sources} />}
         </div>
       </div>
+
+      {classifyAge(data.uploadedAt).tier === "old" && (
+        <div className="warning-banner" style={{ borderColor: "var(--orange)", borderLeftColor: "var(--orange)", background: "rgba(195,81,49,0.1)" }}>
+          <span className="warning-icon" aria-hidden style={{ background: "var(--orange)", color: "var(--paper)" }}>!</span>
+          <span>
+            <strong>Data is more than 3 weeks old.</strong> The numbers below reflect a stale snapshot. Re-upload
+            the latest CSV exports to refresh.
+          </span>
+        </div>
+      )}
 
       <h1 className="headline">
         The portfolio is spending most on the

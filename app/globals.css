@@ -102,6 +102,28 @@ html, body {
 }
 .btn-primary:hover { background: var(--green-d); border-color: var(--green-d); }
 
+.btn-tertiary {
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 4px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-tertiary:hover { color: var(--brown); }
+.action-divider {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: var(--rule);
+  margin: 0 6px;
+  vertical-align: middle;
+}
+
 h1.headline {
   font-weight: 400;
   font-size: 44px;
@@ -588,6 +610,34 @@ tr.detail-row td {
 .legend-item { display: flex; align-items: center; gap: 7px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 .legend-dot.priority { background: var(--green); border-radius: 50%; }
+
+.age-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+.chip-fresh { background: var(--green-l); color: var(--green-d); }
+.chip-ok    { background: rgba(120,180,216,0.18); color: #4f8cb0; }
+.chip-stale { background: rgba(254,190,16,0.22); color: #b88800; }
+.chip-old   { background: rgba(195,81,49,0.18); color: var(--orange); }
+
+.source-list {
+  margin-top: 10px;
+  border-top: 1px dashed var(--rule);
+  padding-top: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: 10.5px;
+  color: var(--dim);
+}
+.source-list .src-key { color: var(--brown); font-weight: 600; }
 
 .warning-banner {
   display: flex;
