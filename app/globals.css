@@ -589,6 +589,34 @@ tr.detail-row td {
 .legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 .legend-dot.priority { background: var(--green); border-radius: 50%; }
 
+.warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(254,190,16,0.15);
+  border: 1px solid var(--yellow);
+  border-left: 4px solid var(--yellow);
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.warning-banner strong { color: var(--brown); font-weight: 600; }
+.warning-banner .warning-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--brown);
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
 .helper-text {
   font-size: 12px;
   color: var(--dim);

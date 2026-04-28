@@ -41,6 +41,12 @@ export type ConvRow = {
   tour_to_reg: number;
 };
 
+export type AgesRow = {
+  code: string;
+  campaign: string;
+  ages: AgeBands;
+};
+
 // ---------------- column matching ----------------
 function findHeader(headers: string[], candidates: string[]): string | undefined {
   const lower = headers.map((h) => h.toLowerCase().trim());
@@ -110,6 +116,47 @@ export function parseAdsRows(rows: CsvRow[], mappings: Mappings): AdsRow[] {
       ctr: hCtr ? pct(r[hCtr]) : 0,
       impressions: hImpr ? Math.round(num(r[hImpr])) : 0,
     });
+  }
+  return out;
+}
+
+export function parseAgesRows(rows: CsvRow[], mappings: Mappings): AgesRow[] {
+  if (!rows.length) return [];
+  const headers = Object.keys(rows[0]);
+  const hCampaign = findHeader(headers, ["Campaign"]);
+  const hPS = findHeader(headers, ["Preschool"]);
+  const hSA = findHeader(headers, ["School Age: Trailblazers", "School Age", "Trailblazers"]);
+  const hInf = findHeader(headers, ["Infants", "Infant"]);
+  const hTT = findHeader(headers, ["Toddlers & Twos", "Toddlers and Twos", "Toddlers"]);
+  const out: AgesRow[] = [];
+  for (const r of rows) {
+    const campaign = hCampaign ? String(r[hCampaign] ?? "") : "";
+    if (!campaign) continue;
+    const code = fuzzyLookup(campaign, mappings.campaignToCode);
+    if (!code) continue;
+    out.push({
+      code,
+      campaign,
+      ages: {
+        PS: hPS ? Math.round(num(r[hPS])) : 0,
+        SA: hSA ? Math.round(num(r[hSA])) : 0,
+        Inf: hInf ? Math.round(num(r[hInf])) : 0,
+        TT: hTT ? Math.round(num(r[hTT])) : 0,
+      },
+    });
+  }
+  return out;
+}
+
+export function agesByCodeFromRows(rows: AgesRow[]): Record<string, AgeBands> {
+  const out: Record<string, AgeBands> = {};
+  for (const r of rows) {
+    const cur = out[r.code] ?? { PS: 0, SA: 0, Inf: 0, TT: 0 };
+    cur.PS += r.ages.PS;
+    cur.SA += r.ages.SA;
+    cur.Inf += r.ages.Inf;
+    cur.TT += r.ages.TT;
+    out[r.code] = cur;
   }
   return out;
 }

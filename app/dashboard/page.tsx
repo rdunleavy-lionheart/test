@@ -96,6 +96,18 @@ export default function DashboardPage() {
 
       <StatsStrip academies={data.academies} />
 
+      {data.hasAges === false && (
+        <div className="warning-banner">
+          <span className="warning-icon" aria-hidden>!</span>
+          <span>
+            <strong>Age-group data not uploaded</strong> — targeting alignment scores unavailable. Upload the
+            "Google Ads — Clicks by Age Group" CSV (slot B) on the{" "}
+            <Link href="/upload" style={{ color: "var(--green-d)", textDecoration: "underline" }}>upload page</Link>{" "}
+            to enable the alignment column and the per-academy targeting comparison chart.
+          </span>
+        </div>
+      )}
+
       <div className="section">
         <div className="section-header">
           <div className="subhead">

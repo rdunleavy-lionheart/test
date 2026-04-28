@@ -64,6 +64,7 @@ export type Mappings = {
 export type Stored = {
   academies: Academy[];
   uploadedAt: string;
+  hasAges?: boolean;
 };
 
 export type FilterKey = "all" | "priority" | "inefficient" | "efficient" | "misaligned";

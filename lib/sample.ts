@@ -63,5 +63,5 @@ export function buildSampleStored(): Stored {
       rooms: det?.rooms ?? null,
     };
   });
-  return { academies, uploadedAt: new Date().toISOString() };
+  return { academies, uploadedAt: new Date().toISOString(), hasAges: true };
 }
