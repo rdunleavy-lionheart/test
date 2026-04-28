@@ -8,7 +8,7 @@ type Props = {
   tag?: string;
 };
 
-const LOGO_SRC = "/lionheart-logo.png";
+const LOGO_SRC = "/lionheart-logo.webp";
 
 export default function BrandMark({ tag }: Props) {
   const [hasLogo, setHasLogo] = useState(true);
@@ -19,8 +19,8 @@ export default function BrandMark({ tag }: Props) {
         <Image
           src={LOGO_SRC}
           alt="Lionheart Children's Academy"
-          width={220}
-          height={68}
+          width={1920}
+          height={600}
           priority
           className="brand-logo"
           onError={() => setHasLogo(false)}
