@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import BrandMark from "@/components/BrandMark";
 import CsvUploader from "@/components/CsvUploader";
 import { loadMappings } from "@/lib/mappings";
 import { mergeAcademies, saveStored } from "@/lib/processor";
@@ -57,12 +58,7 @@ export default function UploadPage() {
   return (
     <div className="container-page">
       <div className="masthead">
-        <div className="brand-lockup">
-          <div className="brand-mark">
-            li<span className="leaf">o</span>nheart
-          </div>
-          <div className="brand-tag">Marketing Allocation Brief</div>
-        </div>
+        <BrandMark tag="Marketing Allocation Brief" />
         <div className="header-actions">
           <Link href="/settings" className="btn-link">Mappings</Link>
           <button className="btn-link" onClick={logout}>Sign out</button>

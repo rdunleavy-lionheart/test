@@ -2,6 +2,7 @@
 
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import BrandMark from "@/components/BrandMark";
 
 function LoginInner() {
   const router = useRouter();
@@ -37,10 +38,8 @@ function LoginInner() {
   return (
     <div className="center-wrap">
       <div className="card">
-        <div className="brand-lockup" style={{ marginBottom: 24 }}>
-          <div className="brand-mark">
-            li<span className="leaf">o</span>nheart
-          </div>
+        <div style={{ marginBottom: 24 }}>
+          <BrandMark />
         </div>
         <h1>Marketing Allocation</h1>
         <div className="sub">Enter the dashboard password to continue.</div>

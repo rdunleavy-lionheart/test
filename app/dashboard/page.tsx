@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import BrandMark from "@/components/BrandMark";
 import FilterBar from "@/components/FilterBar";
 import InsightsPanel from "@/components/InsightsPanel";
 import MasterTable from "@/components/MasterTable";
@@ -65,12 +66,7 @@ export default function DashboardPage() {
   return (
     <div className="container-page">
       <div className="masthead">
-        <div className="brand-lockup">
-          <div className="brand-mark">
-            li<span className="leaf">o</span>nheart
-          </div>
-          <div className="brand-tag">Marketing Allocation Brief</div>
-        </div>
+        <BrandMark tag="Marketing Allocation Brief" />
         <div className="meta" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
           <div>
             Period <strong>past 28 days</strong>

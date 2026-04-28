@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import BrandMark from "@/components/BrandMark";
 import { DEFAULT_MAPPINGS, loadMappings, resetMappings, saveMappings } from "@/lib/mappings";
 import type { Mappings } from "@/lib/types";
 
@@ -53,12 +54,7 @@ export default function SettingsPage() {
   return (
     <div className="container-page">
       <div className="masthead">
-        <div className="brand-lockup">
-          <div className="brand-mark">
-            li<span className="leaf">o</span>nheart
-          </div>
-          <div className="brand-tag">Settings · Column Mappings</div>
-        </div>
+        <BrandMark tag="Settings · Column Mappings" />
         <div className="header-actions">
           <Link href="/dashboard" className="btn-link">Dashboard</Link>
           <Link href="/upload" className="btn-link">Upload</Link>

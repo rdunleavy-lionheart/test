@@ -52,6 +52,14 @@ html, body {
   color: var(--brown);
 }
 .brand-mark .leaf { color: var(--green); font-weight: 600; }
+.brand-logo {
+  width: auto;
+  height: 56px;
+  display: block;
+}
+@media print {
+  .brand-logo { height: 48px; }
+}
 .brand-tag {
   font-size: 12px;
   color: var(--green);
