@@ -2,11 +2,21 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BrandMark from "@/components/BrandMark";
 import CsvUploader from "@/components/CsvUploader";
 import { loadMappings } from "@/lib/mappings";
-import { agesByCodeFromRows, mergeAcademies, parseAgesRows, saveStored } from "@/lib/processor";
+import {
+  agesByCodeFromRows,
+  diagnoseAds,
+  diagnoseAges,
+  diagnoseConv,
+  diagnoseFte,
+  diagnoseLeads,
+  mergeAcademies,
+  parseAgesRows,
+  saveStored,
+} from "@/lib/processor";
 import type { CsvRow } from "@/lib/processor";
 import { buildSampleStored } from "@/lib/sample";
 
@@ -23,11 +33,17 @@ export default function UploadPage() {
 
   const allReady = ads && ages && leads && fte && conv;
 
+  const mappings = useMemo(() => loadMappings(), []);
+  const adsDiag = useMemo(() => (ads ? diagnoseAds(ads.rows, mappings) : null), [ads, mappings]);
+  const agesDiag = useMemo(() => (ages ? diagnoseAges(ages.rows, mappings) : null), [ages, mappings]);
+  const leadsDiag = useMemo(() => (leads ? diagnoseLeads(leads.rows, mappings) : null), [leads, mappings]);
+  const fteDiag = useMemo(() => (fte ? diagnoseFte(fte.rows, mappings) : null), [fte, mappings]);
+  const convDiag = useMemo(() => (conv ? diagnoseConv(conv.rows, mappings) : null), [conv, mappings]);
+
   function build() {
     if (!allReady) return;
     setError(null);
     try {
-      const mappings = loadMappings();
       const agesRows = parseAgesRows(ages.rows, mappings);
       const agesByCode = agesByCodeFromRows(agesRows);
       const hasAges = Object.keys(agesByCode).length > 0;
@@ -82,30 +98,35 @@ export default function UploadPage() {
           label="A · Google Ads — Campaign Performance"
           description="Campaign, Cost, Clicks, Avg. CPC, CTR, Impressions"
           loadedFile={ads ? { name: ads.name, rowCount: ads.rowCount } : null}
+          diagnostic={adsDiag}
           onParsed={(rows, file) => setAds({ name: file.name, rowCount: rows.length, rows })}
         />
         <CsvUploader
           label="B · Google Ads — Clicks by Age Group"
           description="Campaign, Preschool, School Age: Trailblazers, Infants, Toddlers & Twos. Powers the targeting alignment score."
           loadedFile={ages ? { name: ages.name, rowCount: ages.rowCount } : null}
+          diagnostic={agesDiag}
           onParsed={(rows, file) => setAges({ name: file.name, rowCount: rows.length, rows })}
         />
         <CsvUploader
           label="C · Lead Source"
           description="Center Name, Total Leads, Paid Lead"
           loadedFile={leads ? { name: leads.name, rowCount: leads.rowCount } : null}
+          diagnostic={leadsDiag}
           onParsed={(rows, file) => setLeads({ name: file.name, rowCount: rows.length, rows })}
         />
         <CsvUploader
           label="D · FTE / Classroom Roll"
           description="Academy, Enrollments, FTEs by classroom + budget"
           loadedFile={fte ? { name: fte.name, rowCount: fte.rowCount } : null}
+          diagnostic={fteDiag}
           onParsed={(rows, file) => setFte({ name: file.name, rowCount: rows.length, rows })}
         />
         <CsvUploader
           label="E · Conversion Rates"
           description="Location Name, Lead→Tour & Tour→Registered (most recent month)"
           loadedFile={conv ? { name: conv.name, rowCount: conv.rowCount } : null}
+          diagnostic={convDiag}
           onParsed={(rows, file) => setConv({ name: file.name, rowCount: rows.length, rows })}
         />
       </div>

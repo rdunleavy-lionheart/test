@@ -9,9 +9,10 @@ type Props = {
   description: string;
   onParsed: (rows: CsvRow[], file: File) => void;
   loadedFile?: { name: string; rowCount: number } | null;
+  diagnostic?: { matched: number; total: number; unmatched: string[] } | null;
 };
 
-export default function CsvUploader({ label, description, onParsed, loadedFile }: Props) {
+export default function CsvUploader({ label, description, onParsed, loadedFile, diagnostic }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,10 +68,36 @@ export default function CsvUploader({ label, description, onParsed, loadedFile }
         <>
           <div className="filename">{loadedFile.name}</div>
           <div className="row-count">{loadedFile.rowCount.toLocaleString()} rows</div>
+          {diagnostic && <DiagnosticLine d={diagnostic} />}
         </>
       )}
       {!loadedFile && !busy && <div className="row-count">Drag CSV here, or click to browse</div>}
       {error && <div className="error-msg">{error}</div>}
     </div>
   );
+}
+
+function DiagnosticLine({ d }: { d: { matched: number; total: number; unmatched: string[] } }) {
+  if (d.total === 0) {
+    return <div className="diag diag-bad">No usable rows — header column not found</div>;
+  }
+  if (d.matched === 0) {
+    return (
+      <div className="diag diag-bad">
+        0 of {d.total} mapped — check headers or update mappings in /settings
+        {d.unmatched.length > 0 && <div className="diag-list">e.g. {d.unmatched.slice(0, 3).join(" · ")}</div>}
+      </div>
+    );
+  }
+  if (d.matched < d.total) {
+    return (
+      <div className="diag diag-warn">
+        {d.matched} of {d.total} mapped · {d.unmatched.length} unmatched
+        {d.unmatched.length > 0 && (
+          <div className="diag-list">unmatched: {d.unmatched.slice(0, 3).join(" · ")}{d.unmatched.length > 3 ? ` (+${d.unmatched.length - 3})` : ""}</div>
+        )}
+      </div>
+    );
+  }
+  return <div className="diag diag-good">{d.matched} of {d.total} mapped</div>;
 }

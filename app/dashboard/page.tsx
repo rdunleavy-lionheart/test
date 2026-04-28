@@ -148,6 +148,10 @@ export default function DashboardPage() {
         <div className="section-header">
           <div className="subhead">Section 02 · Net-Neutral · ~$6.5K Shifted</div>
           <h2 className="section-title">Recommended Reallocation</h2>
+          <div style={{ marginTop: 6, fontSize: 11, color: "var(--dim)", fontStyle: "italic" }}>
+            The reallocation table and insights below are locked to the April 2026 brief. They do not auto-update
+            from new CSV data — edit the source files when the period rolls.
+          </div>
         </div>
 
         <div className="two-col">

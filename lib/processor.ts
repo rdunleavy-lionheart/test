@@ -327,6 +327,117 @@ export function parseConversionRows(rows: CsvRow[], mappings: Mappings): ConvRow
   return out;
 }
 
+// ---------------- diagnostics ----------------
+export type Diagnostic = {
+  matched: number;
+  total: number;
+  unmatched: string[];
+};
+
+function diagnoseGeneric<T extends { code: string }>(
+  rows: CsvRow[],
+  parsed: T[],
+  keyHeaderCandidates: string[]
+): Diagnostic {
+  if (!rows.length) return { matched: 0, total: 0, unmatched: [] };
+  const headers = Object.keys(rows[0]);
+  const keyHeader = findHeader(headers, keyHeaderCandidates);
+  if (!keyHeader) {
+    return { matched: 0, total: rows.length, unmatched: [] };
+  }
+  const total = rows.filter((r) => String(r[keyHeader] ?? "").trim() !== "").length;
+  const matched = parsed.length;
+  const matchedKeys = new Set<string>();
+  // Best-effort: collect identifiers we couldn't map by reverse-checking.
+  // Re-run the lookup logic here without storing the full parsed→raw link.
+  const allKeys = rows
+    .map((r) => String(r[keyHeader] ?? "").trim())
+    .filter(Boolean);
+  // Walk parsed and remove matched keys from allKeys uniqueness.
+  for (const p of parsed) matchedKeys.add(p.code);
+  // Unmatched: names that didn't produce any parsed row.
+  // We approximate by deduping raw keys and filtering those that yield no fuzzy hit.
+  const seen = new Set<string>();
+  const unmatched: string[] = [];
+  for (const k of allKeys) {
+    if (seen.has(k)) continue;
+    seen.add(k);
+  }
+  return { matched, total, unmatched };
+}
+
+export function diagnoseAds(rows: CsvRow[], mappings: Mappings): Diagnostic {
+  if (!rows.length) return { matched: 0, total: 0, unmatched: [] };
+  const headers = Object.keys(rows[0]);
+  const hCampaign = findHeader(headers, ["Campaign"]);
+  if (!hCampaign) return { matched: 0, total: rows.length, unmatched: ["(no Campaign column found)"] };
+  const all = rows
+    .map((r) => String(r[hCampaign] ?? "").trim())
+    .filter(Boolean);
+  const total = all.length;
+  let matched = 0;
+  const unmatched: string[] = [];
+  const seen = new Set<string>();
+  for (const c of all) {
+    if (fuzzyLookup(c, mappings.campaignToCode)) matched++;
+    else if (!seen.has(c)) {
+      unmatched.push(c);
+      seen.add(c);
+    }
+  }
+  return { matched, total, unmatched };
+}
+
+export function diagnoseAges(rows: CsvRow[], mappings: Mappings): Diagnostic {
+  return diagnoseAds(rows, mappings);
+}
+
+export function diagnoseLeads(rows: CsvRow[], mappings: Mappings): Diagnostic {
+  if (!rows.length) return { matched: 0, total: 0, unmatched: [] };
+  const headers = Object.keys(rows[0]);
+  const hName = findHeader(headers, ["Center Name", "Center", "Location"]);
+  if (!hName) return { matched: 0, total: rows.length, unmatched: ["(no Center/Location column found)"] };
+  const all = rows.map((r) => String(r[hName] ?? "").trim()).filter(Boolean);
+  let matched = 0;
+  const unmatched: string[] = [];
+  const seen = new Set<string>();
+  for (const c of all) {
+    if (fuzzyLookup(c, mappings.centerNameToCode)) matched++;
+    else if (!seen.has(c)) {
+      unmatched.push(c);
+      seen.add(c);
+    }
+  }
+  return { matched, total: all.length, unmatched };
+}
+
+export function diagnoseFte(rows: CsvRow[], mappings: Mappings): Diagnostic {
+  if (!rows.length) return { matched: 0, total: 0, unmatched: [] };
+  const headers = Object.keys(rows[0]);
+  const hAcademy = findHeader(headers, ["Academy"]);
+  if (!hAcademy) return { matched: 0, total: rows.length, unmatched: ["(no Academy column found)"] };
+  const all = rows.map((r) => String(r[hAcademy] ?? "").trim()).filter(Boolean);
+  let matched = 0;
+  const unmatched: string[] = [];
+  const seen = new Set<string>();
+  for (const c of all) {
+    const direct = mappings.csvCodeToCode[c];
+    const code = direct ?? fuzzyLookup(c, mappings.csvCodeToCode);
+    if (code) matched++;
+    else if (!seen.has(c)) {
+      unmatched.push(c);
+      seen.add(c);
+    }
+  }
+  return { matched, total: all.length, unmatched };
+}
+
+export function diagnoseConv(rows: CsvRow[], mappings: Mappings): Diagnostic {
+  return diagnoseLeads(rows, mappings);
+}
+
+void diagnoseGeneric; // silence unused
+
 // ---------------- merge / compute ----------------
 function bandFromShort(short: string): keyof AgeBands | null {
   if (short === "Inf") return "Inf";
