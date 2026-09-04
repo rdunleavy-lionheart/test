@@ -8,7 +8,11 @@ as MCP tools: `get_account_summaries`, `get_property_details`,
 
 `.mcp.json` in the repo root registers the server for anyone working in this
 project. Claude Code will ask you to approve the project-scoped server the
-first time you open the repo.
+first time you open the repo — until you do, it shows as *Pending approval*.
+
+Keep the registration in `.mcp.json` only. Defining a server of the same name
+in user scope as well makes Claude Code report conflicting scopes, and the
+duplicate fails to start.
 
 ## 1. Enable the APIs
 
@@ -24,6 +28,10 @@ Requires Python 3.10+ and [pipx](https://pipx.pypa.io/stable/#install-pipx):
 ```bash
 pipx install analytics-mcp
 ```
+
+This puts the `google-analytics-mcp` executable on your `PATH`, which is the
+command `.mcp.json` invokes. Make sure `pipx ensurepath` has been run so your
+shell can find it.
 
 ## 3. Log in
 
