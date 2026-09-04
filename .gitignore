@@ -9,3 +9,8 @@ dist
 *.log
 .DS_Store
 tsconfig.tsbuildinfo
+
+# Google credentials (never commit)
+application_default_credentials.json
+client_secret*.json
+*-service-account.json
